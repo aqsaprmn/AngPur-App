@@ -12,6 +12,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import {
   Avatar,
+  Badge,
   Box,
   createTheme,
   Menu,
@@ -171,19 +172,19 @@ const Navbar: React.FC<Props> = (props) => {
                 </div>
               </Box>
 
-              <Box sx={{ display: { xs: "none", sm: "flex", gap: 10 } }}>
-                <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                  <IconButton
-                    size="large"
-                    edge="end"
-                    aria-label="account of current user"
-                    // aria-controls={menuId}
-                    aria-haspopup="true"
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                  >
-                    <FaShoppingCart size={20} />
-                  </IconButton>
+              <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 4 }}>
+                <Box
+                  sx={{
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
+                  <Link to={"/order"}>
+                    <IconButton size="large" aria-label="" color="inherit">
+                      <Badge badgeContent={0} color="error">
+                        <FaShoppingCart size={20} />
+                      </Badge>
+                    </IconButton>
+                  </Link>
                 </Box>
                 {Object.keys(auth).length > 0 ? (
                   <>
