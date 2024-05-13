@@ -1,9 +1,8 @@
-import { RouteElementProp } from "@app/components/Maps/DukuhAtasJatiMulya/S1_1";
 import { DecodedJwt } from "@app/interfaces/JwtDecoded";
 import { GridRowModel } from "@mui/x-data-grid";
 import { default as jwtDecode, default as jwt_decode } from "jwt-decode";
 import { getJwtCookie } from "./constants/cookieHandler";
-import { Data, Route, TokenPayload, currentUser } from "./constants/types";
+import { Data, Route, TokenPayload } from "./constants/types";
 
 export async function decodeJwt(jwtToken: string): Promise<DecodedJwt> {
   return await jwt_decode(jwtToken);
@@ -110,7 +109,9 @@ export function findUpdatedKeys(oldObject: any, newObject: any): string[] {
 export const permissionFullExtractor = ({ env }: { env: string }) => {
   if (
     window.location.pathname === "/login" ||
-    window.location.pathname === "/"
+    window.location.pathname === "/register" ||
+    window.location.pathname === "/" ||
+    !window.location.pathname.includes("admin")
   ) {
     return false;
   }

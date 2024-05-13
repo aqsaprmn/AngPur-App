@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const Guest = axios.create({
   baseURL: `${import.meta.env.VITE_BASE_URL}`,
@@ -9,6 +10,11 @@ const Guest = axios.create({
 });
 
 Guest.interceptors.request.use(async (config) => {
+  let tokensData = Cookies.get("token");
+  if (tokensData !== undefined) {
+    config.headers.Authorization = `Bearer ${tokensData}`;
+    return config;
+  }
   return config;
 });
 

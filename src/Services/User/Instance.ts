@@ -1,5 +1,5 @@
 import { messaging } from "@app/firebase-config";
-import { getJwtCookieV2 } from "@app/utils/constants/cookieHandler";
+import { getJwtCookie } from "@app/utils/constants/cookieHandler";
 import axios from "axios";
 import { deleteToken } from "firebase/messaging";
 import Cookies from "js-cookie";
@@ -13,7 +13,7 @@ const TrainService = axios.create({
 });
 
 TrainService.interceptors.request.use(async (config) => {
-  let tokensData = Cookies.get("token_jwt_v2");
+  let tokensData = Cookies.get("token");
   if (tokensData !== undefined) {
     config.headers.Authorization = `Bearer ${tokensData}`;
     return config;

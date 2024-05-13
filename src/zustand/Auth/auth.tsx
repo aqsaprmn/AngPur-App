@@ -2,17 +2,19 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 interface Auth {
+  uuid: string;
   email: string;
   role: string;
   initialRoute: string;
-  permissions: string[];
   name: string;
   sub: string;
   setAuth: ({
     email,
     initialRoute,
     name,
+    uuid,
   }: {
+    uuid: string;
     email: string;
     name: string;
     initialRoute?: string;
@@ -32,17 +34,19 @@ export const useAuthStore = create<Auth>()(
   devtools(
     persist(
       (set) => ({
+        uuid: "",
         email: "",
         role: "",
         name: "",
         initialRoute: "/",
-        permissions: [],
         sub: "",
         setAuth: ({
           email,
           initialRoute,
           name,
+          uuid,
         }: {
+          uuid: string;
           email: string;
           name: string;
           initialRoute?: string;
@@ -51,6 +55,7 @@ export const useAuthStore = create<Auth>()(
             ...state,
             email: email,
             name: name,
+            uuid: uuid,
             initialRoute: initialRoute ?? state.initialRoute,
           }));
         },

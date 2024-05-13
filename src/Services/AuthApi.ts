@@ -1,6 +1,4 @@
-import { messaging } from "@app/firebase-config";
 import axios from "axios";
-import { deleteToken } from "firebase/messaging";
 import Cookies from "js-cookie";
 import { useLogoutQueryV2 } from "./AuthV2Api";
 
@@ -54,7 +52,6 @@ export const handleLogOut = async () => {
     Object.keys(Cookies.get()).forEach((cookie) => {
       Cookies.remove(cookie);
     });
-    await deleteToken(messaging).catch((e) => console.log(e));
     window.location.href = "/";
   } catch (error) {
     throw new Error(error as string);

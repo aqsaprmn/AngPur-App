@@ -2,9 +2,12 @@ import CardProduct from "@app/components/Card/CardProduct";
 import { GETListProduct } from "@app/Services/Product";
 import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import DetailProductDialog from "./Detail/DetailProductDialog";
 
 const ProductPage = () => {
   const [product, setProduct] = useState<any[]>([]);
+  const [productDetail, setProductDetail] = useState<any>({});
+  const [detailDialog, setDetailDialog] = useState<boolean>(false);
 
   const fetchData = async () => {
     try {
@@ -51,19 +54,26 @@ const ProductPage = () => {
             <CardProduct
               product={product}
               setProduct={setProduct}
+              setProductDetail={setProductDetail}
+              setDetailDialog={setDetailDialog}
               image={item.image}
               name={item.name}
               price={item.price}
               stock={item.stock}
               sold={item.sold}
-              uuid={item.uuid}
               key={item.id}
+              all={item.all}
               id={item.no}
               cart={item.cart}
             />
           );
         })}
       </div>
+      <DetailProductDialog
+        data={productDetail}
+        open={detailDialog}
+        onClose={() => setDetailDialog(false)}
+      />
     </div>
   );
 };

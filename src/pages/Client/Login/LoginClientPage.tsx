@@ -21,20 +21,23 @@ const LoginClientPage = () => {
       },
     });
 
-    await Cookies.set("token", loginGo.data.access_token);
+    const result = loginGo.data;
 
-    if (loginGo.data.access_token) {
-      let decoded = jwt_decode(loginGo.data.access_token) as any;
+    await Cookies.set("token", result.data.access_token);
 
-      if (loginGo.data.detail.role) {
+    if (result.data.access_token) {
+      let decoded = jwt_decode(result.data.access_token) as any;
+
+      if (result.data.detail.role) {
         setRole({
-          role: loginGo.data.detail.role,
+          role: result.data.detail.role,
           initialRoute: "/",
         });
 
         setAuth({
-          email: loginGo.data.detail.email,
-          name: loginGo.data.detail.name,
+          uuid: result.data.detail.uuid,
+          email: result.data.detail.email,
+          name: result.data.detail.name,
         });
 
         setSubAuth({
@@ -48,7 +51,7 @@ const LoginClientPage = () => {
     } else {
       Swal.fire({
         title: "Oops!",
-        text: "You might just throw wrong password or username",
+        text: "You might just throw wrong password or email",
         icon: "info",
         showConfirmButton: true,
         confirmButtonText: "Let me try again",

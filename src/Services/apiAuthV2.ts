@@ -1,6 +1,6 @@
 import { messaging } from "@app/firebase-config";
 // import { BASE_URL } from "@app/utils/constants/RoutesAndURLS";
-import { getJwtCookieV2 } from "@app/utils/constants/cookieHandler";
+import { getJwtCookie } from "@app/utils/constants/cookieHandler";
 import axios from "axios";
 import { deleteToken } from "firebase/messaging";
 import Cookies from "js-cookie";
@@ -27,20 +27,30 @@ instanchAuthV2.interceptors.response.use(
     console.log(error);
     if (error.response.status >= 400) {
       const authData = Cookies.get("token_jwt_v2");
-      let apiResponse = await axios.post(`${import.meta.env.VITE_LOGIN_SERVICE_BASE_URL}${import.meta.env.VITE_LOGIN_SERVICE_REFRESH_END_POINT}`,{},
-      {
-        headers: {
-          Authorization: `Bearer ${getJwtCookieV2()}`,
-        },
-      });
+      let apiResponse = await axios.post(
+        `${import.meta.env.VITE_LOGIN_SERVICE_BASE_URL}${
+          import.meta.env.VITE_LOGIN_SERVICE_REFRESH_END_POINT
+        }`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${getJwtCookie()}`,
+          },
+        }
+      );
       if ((apiResponse as any).status === 401 || apiResponse.status === 403) {
         try {
-          await axios.post(`${import.meta.env.VITE_LOGIN_SERVICE_BASE_URL}${import.meta.env.VITE_LOGIN_SERVICE_LOGOUT_END_POINT}`,{},
-          {
-            headers: {
-              Authorization: `Bearer ${getJwtCookieV2()}`,
-            },
-          });
+          await axios.post(
+            `${import.meta.env.VITE_LOGIN_SERVICE_BASE_URL}${
+              import.meta.env.VITE_LOGIN_SERVICE_LOGOUT_END_POINT
+            }`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${getJwtCookie()}`,
+              },
+            }
+          );
           await localStorage.removeItem("auth");
           Object.keys(Cookies.get()).forEach((cookie) => {
             Cookies.remove(cookie);

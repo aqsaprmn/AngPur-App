@@ -10,6 +10,9 @@ import MainPage from "./pages/Client/Main/Main";
 import PublicRoute from "./routes/PublicRoute";
 import PrivateRoute from "./routes/PrivateRoute";
 import LoginClientPage from "./pages/Client/Login/LoginClientPage";
+import RegisterPage from "./pages/Client/Login/RegisterPage";
+import ShippingPage from "./pages/Client/Shipping/Shipping";
+import Cookies from "js-cookie";
 
 function App() {
   useEffect(() => {
@@ -25,8 +28,9 @@ function App() {
           }),
         };
       });
+
     setInterval(async () => {
-      if (window.location.pathname !== "/") {
+      if ("token" in Cookies.get()) {
         await UseRefreshTokenQueryV2();
       }
     }, Number(import.meta.env.VITE_REFRESH_INTERVAL));
@@ -43,9 +47,9 @@ function App() {
             </Route>
 
             <Route path="/shipping">
-              <Route path="/shipping" element={<MainPage />} />
-              <Route path="/shipping/create" element={<MainPage />} />
-              <Route path="/shipping/edit" element={<MainPage />} />
+              <Route path="/shipping" element={<ShippingPage />} />
+              <Route path="/shipping/create" element={<ShippingPage />} />
+              <Route path="/shipping/edit" element={<ShippingPage />} />
             </Route>
 
             <Route path="/order">
@@ -55,6 +59,10 @@ function App() {
 
             <Route path="/login" element={<PublicRoute />}>
               <Route path="/login" element={<LoginClientPage />} />
+            </Route>
+
+            <Route path="/register" element={<PublicRoute />}>
+              <Route path="/register" element={<RegisterPage />} />
             </Route>
             {/* END CLIENT */}
           </Route>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import Guest from "./Guest";
 
 export const ProcessLoginToken = async ({
   body,
@@ -16,10 +17,52 @@ export const ProcessLoginToken = async ({
       body
     );
 
-    const res = await fetching.data;
+    const result = {
+      isSuccess: fetching.data.success,
+      isError: !fetching.data.success,
+      data: fetching.data,
+    };
 
-    return res;
-  } catch (e) {
-    return e;
+    return result;
+  } catch (error) {
+    return {
+      isSuccess: false,
+      isError: true,
+      data: error,
+    };
+  }
+};
+
+export const ProcessRegister = async ({
+  body,
+}: {
+  body: {
+    email: string;
+    name: string;
+    phone: string;
+    password_confirmation: string;
+    password: string;
+    role: string;
+  };
+}) => {
+  try {
+    const fetching = await Guest.post(
+      `${import.meta.env.VITE_LOGIN_SERVICE_REGISTER_END_POINT}`,
+      body
+    );
+
+    const result = {
+      isSuccess: fetching.data.success,
+      isError: !fetching.data.success,
+      data: fetching.data,
+    };
+
+    return result;
+  } catch (error) {
+    return {
+      isSuccess: false,
+      isError: true,
+      data: error,
+    };
   }
 };

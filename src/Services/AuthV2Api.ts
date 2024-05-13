@@ -20,7 +20,7 @@ export const UseRefreshTokenQueryV2 = async () => {
     const res = newToken.data;
 
     if (newToken.status > 199 && newToken.status < 300) {
-      Cookies.set("token", res.token);
+      Cookies.set("token", res.data.access_token);
       return true;
     }
 
@@ -47,7 +47,7 @@ export const useLogoutQueryV2 = async () => {
     }
   );
 
-  if (fetching.data.result === "success") {
+  if (fetching.data.success) {
     return true;
   }
 
