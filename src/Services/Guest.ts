@@ -1,0 +1,23 @@
+import axios from "axios";
+
+const Guest = axios.create({
+  baseURL: `${import.meta.env.VITE_BASE_URL}`,
+  timeout: 1000 * 60,
+  validateStatus: (status) => {
+    return status >= 200 && status < 500;
+  },
+});
+
+Guest.interceptors.request.use(async (config) => {
+  return config;
+});
+
+Guest.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    Promise.reject(error);
+    axios(error.config);
+  }
+);
+
+export default Guest;
