@@ -6,6 +6,8 @@ import { useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { permissionFullExtractor } from "@app/utils/Processor";
+import { useAuthStore } from "@app/zustand/Auth/auth";
 
 export default function MiniDrawer() {
   const theme = useTheme();
@@ -13,6 +15,7 @@ export default function MiniDrawer() {
   const sm = useMediaQuery(theme.breakpoints.only("sm"));
   // console.log("roling", role);
   const [open, setOpen] = useState(false);
+  const { role } = useAuthStore((state: any) => state);
 
   const handleDrawerOpen = () => {
     const dupMenu = [...Menus];
@@ -30,7 +33,6 @@ export default function MiniDrawer() {
     {
       title: string;
       icon: any;
-      children: any[];
       route?: string;
       expanded: boolean;
       translationKey: string;
@@ -38,7 +40,15 @@ export default function MiniDrawer() {
   >(defaultRoleV2.routes);
 
   useMemo((): any => {
-    setMenus(defaultRoleV2.routes);
+    const newMenus = [...defaultRoleV2.routes].map((item) => {
+      item.isHidden = !permissionFullExtractor({
+        env: import.meta.env.VITE_ALLOWED_USER_MANAGEMENT,
+        role: role,
+      });
+
+      return item;
+    });
+    setMenus(newMenus);
   }, [defaultRoleV2.routes]);
 
   return (

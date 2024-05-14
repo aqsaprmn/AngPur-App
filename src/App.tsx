@@ -14,21 +14,15 @@ import RegisterPage from "./pages/Client/Login/RegisterPage";
 import ShippingPage from "./pages/Client/Shipping/Shipping";
 import Cookies from "js-cookie";
 import OrderPage from "./pages/Client/Order/Order";
+import LoginAdminPage from "./pages/Admin/Login/LoginAdminPage";
+import LoginRoute from "./routes/LoginRoute";
+import UserPage from "./pages/Admin/User/User";
 
 function App() {
   useEffect(() => {
-    defaultRoleV2.routes
-      .filter((e) => {
-        return e.isHidden == false;
-      })
-      .map((e) => {
-        return {
-          ...e,
-          children: e.children.filter((e) => {
-            return e.isHidden == false;
-          }),
-        };
-      });
+    defaultRoleV2.routes.filter((e) => {
+      return e.isHidden == false;
+    });
 
     setInterval(async () => {
       if ("token" in Cookies.get()) {
@@ -69,12 +63,14 @@ function App() {
           </Route>
 
           {/* ADMIN */}
-          <Route path="/admin" element={<PrivateRoute />}>
-            <Route path="/admin" element={<MainPage />} />
+          <Route path="/admin">
+            <Route path="/admin/login" element={<LoginRoute />}>
+              <Route path="/admin/login" element={<LoginAdminPage />} />
+            </Route>
 
             <Route element={<MainLayout />}>
               {/* Order */}
-              <Route path="/admin/order">
+              <Route path="/admin/order" element={<PrivateRoute />}>
                 {/* GENERAL PAGE*/}
                 <Route path="/admin/order" element={<MainPage />} />
                 <Route path="/admin/order/create" element={<MainPage />} />
@@ -82,7 +78,7 @@ function App() {
               </Route>
 
               {/* Product */}
-              <Route path="/admin/product">
+              <Route path="/admin/product" element={<PrivateRoute />}>
                 {/* GENERAL PAGE*/}
                 <Route path="/admin/product" element={<MainPage />} />
                 <Route path="/admin/product/create" element={<MainPage />} />
@@ -90,9 +86,9 @@ function App() {
               </Route>
 
               {/* User */}
-              <Route path="/admin/user">
+              <Route path="/admin/user" element={<PrivateRoute />}>
                 {/* GENERAL PAGE*/}
-                <Route path="/admin/user" element={<MainPage />} />
+                <Route path="/admin/user" element={<UserPage />} />
                 <Route path="/admin/user/create" element={<MainPage />} />
                 <Route path="/admin/user/edit" element={<MainPage />} />
               </Route>

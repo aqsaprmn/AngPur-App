@@ -2,7 +2,8 @@ import { DecodedJwt } from "@app/interfaces/JwtDecoded";
 import { GridRowModel } from "@mui/x-data-grid";
 import { default as jwtDecode, default as jwt_decode } from "jwt-decode";
 import { getJwtCookie } from "./constants/cookieHandler";
-import { Data, Route, TokenPayload } from "./constants/types";
+import { Route } from "./constants/types";
+import { useAuthStore } from "@app/zustand/Auth/auth";
 
 export async function decodeJwt(jwtToken: string): Promise<DecodedJwt> {
   return await jwt_decode(jwtToken);
@@ -106,12 +107,18 @@ export function findUpdatedKeys(oldObject: any, newObject: any): string[] {
   return updatedKeys;
 }
 
-export const permissionFullExtractor = ({ env }: { env: string }) => {
+export const permissionFullExtractor = ({
+  env,
+  role,
+}: {
+  env: string;
+  role: string;
+}) => {
   if (
     window.location.pathname === "/login" ||
     window.location.pathname === "/register" ||
     window.location.pathname === "/" ||
-    !window.location.pathname.includes("admin")
+    window.location.pathname === "/admin/login"
   ) {
     return false;
   }
@@ -119,25 +126,12 @@ export const permissionFullExtractor = ({ env }: { env: string }) => {
   let envData: string[] = [];
   if (env.includes(",")) envData = env.split(",");
   else envData = [env];
-  let authData = jwtDecode(getJwtCookie() as string) as TokenPayload;
 
-  const currentGroup = authData.user.activeRole.group;
-  const currentAuth = {} as Data;
-  currentAuth[currentGroup] = {};
-  authData.user.activeRole.permission.map((i) => {
-    currentAuth[currentGroup][i] = true;
-  });
-  const isAllowed = envData.map((i) => {
-    if (Object.keys(currentAuth).some((e) => e === i.split(".")[0])) {
-      return Object.keys(currentAuth[i.split(".")[0]]).some(
-        (p) => p === i.split(".")[1]
-      );
-    }
+  if (envData.includes(role)) {
+    return true;
+  }
 
-    return false;
-  });
-
-  return isAllowed.some((e) => e == true);
+  return false;
 };
 
 export function processorMenuData(arr: any[], arrayToPush: any[]) {
@@ -182,16 +176,7 @@ export function processorMenuData(arr: any[], arrayToPush: any[]) {
 }
 
 export function removeHidden(arr: any[]): Route[] {
-  return arr
-    .filter((e) => {
-      return e.isHidden == false;
-    })
-    .map((e) => {
-      return {
-        ...e,
-        children: e.children.filter((e: any) => {
-          return e.isHidden == false;
-        }),
-      };
-    });
+  return arr.filter((e) => {
+    return e.isHidden == false;
+  });
 }

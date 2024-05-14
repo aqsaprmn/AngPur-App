@@ -6,11 +6,8 @@ import { useAuthStore } from "@app/zustand/Auth/auth";
 import { GridColDef } from "@mui/x-data-grid-premium";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import ShippingCreateDialog from "./Dialog/ShippingDialogCreate";
-import ShippingDetailDialog from "./Dialog/ShippingDialogDetail";
-import ShippingEditDialog from "./Dialog/ShippingDialogEdit";
 
-const ShippingPage = () => {
+const UserPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentSize, setCurrentSize] = useState<number>(10);
   const [totalPage, setTotalPage] = useState<number>(10);
@@ -200,10 +197,10 @@ const ShippingPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
-        <span className="text-lg font-semibold">Shipping List</span>
+        <span className="text-lg font-semibold">User List</span>
         <div className="flex">
           <MainCustomButton onClick={() => setIsCreate(true)} hidden={true}>
-            Create New Shipping
+            Create New User
           </MainCustomButton>
         </div>
       </div>
@@ -241,28 +238,8 @@ const ShippingPage = () => {
           },
         }}
       />
-
-      <ShippingCreateDialog
-        user_uuid={uuid}
-        setTotalTick={() => setTotalTick(totalTick + 1)}
-        open={isCreate}
-        onClose={() => setIsCreate(false)}
-      />
-
-      <ShippingEditDialog
-        uuid={uuidDetail}
-        setTotalTick={() => setTotalTick(totalTick + 1)}
-        open={isEdit}
-        onClose={() => setIsEdit(false)}
-      />
-
-      <ShippingDetailDialog
-        uuid={uuidDetail}
-        open={isDetail}
-        onClose={() => setIsDetail(false)}
-      />
     </div>
   );
 };
 
-export default ShippingPage;
+export default UserPage;

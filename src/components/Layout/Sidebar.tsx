@@ -1,10 +1,8 @@
 import lrtLogo from "@/assets/img/lrtLogo.png";
-import i18n from "@/i18n/i18n";
 import { handleLogOut } from "@app/Services/AuthApi";
 import { removeHidden } from "@app/utils/Processor";
 import { defaultRoleV2 } from "@app/utils/constants/routeData";
 import { Route } from "@app/utils/constants/types";
-import { useLangStore } from "@app/zustand/Lang/Lang";
 import {
   Collapse,
   List,
@@ -17,8 +15,7 @@ import {
 import { FC, Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GoSignOut } from "react-icons/go";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { LiaLanguageSolid } from "react-icons/lia";
+import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { Drawer, DrawerHeader } from "../Drawer";
 import { HtmlTooltip } from "../Tooltip/HtmlTooltip";
@@ -28,10 +25,8 @@ interface SidebarProp {
 }
 
 const Sidebar: FC<SidebarProp> = ({ open }) => {
-  const { setCurrentLang, currentLang } = useLangStore((state) => state);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [translateOpen, setTranslateOpen] = useState(false);
   const theme = useTheme();
   const isSmScreenOrLower = useMediaQuery(theme.breakpoints.down("md"));
   const [currentRoute, setCurrentRoute] = useState<Route[]>(
@@ -51,8 +46,6 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
     const dupMenu = [...currentRoute];
     navigate(dupMenu[index].children[0].route);
   };
-
-  const handleOpenTranslation = () => setTranslateOpen(!translateOpen);
 
   useEffect(() => {
     setCurrentRoute(removeHidden(defaultRoleV2.routes));
@@ -87,29 +80,8 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
               }}
               className="mb-5"
             >
-              <div className="flex justify-center">
-                <img
-                  src={lrtLogo}
-                  className={`h-16 mt-10 ${
-                    open ? "opacity-100" : "opacity-0 w-0 h-0"
-                  } transition-all duration-300 ease-in-out`}
-                  // style={{
-                  //   display: open ? "block" : "none",
-                  // }}
-                />
-              </div>
-              <div className="w-full flex justify-start pl-14">
-                <span
-                  className={`text-[9px] text-neutral-400FA justify-self-start ${
-                    open ? "opacity-100" : "opacity-0 w-0 h-0"
-                  } transition-all duration-300 ease-in-out`}
-                >
-                  {JSON.stringify(process.env.npm_package_version)?.replaceAll(
-                    '"',
-                    ""
-                  )}
-                </span>
-              </div>
+              <div className="font-bold text-4xl py-3">AngPur</div>
+              <div className="w-full text-center">F&B</div>
             </DrawerHeader>
             <div>
               <List>
@@ -456,10 +428,6 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
                 sx={{
                   marginTop: "1rem",
                   paddingLeft: open ? 2 : 0,
-                  // "&:hover": {
-                  //   color: "#E41205",
-                  //   fill: "#E41205",
-                  // },
                 }}
                 onClick={() => {
                   handleLogOut();
@@ -483,115 +451,6 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
                   </ListItemText>
                 ) : null}
               </ListItemButton>
-              <ListItemButton
-                dense
-                onClick={handleOpenTranslation}
-                sx={{
-                  marginTop: "1rem",
-                  paddingLeft: open ? 2 : 0,
-                  color: "#84848C",
-                }}
-              >
-                <ListItemIcon
-                  className={`flex justify-center`}
-                  sx={{
-                    color: "#84848C",
-                  }}
-                >
-                  <LiaLanguageSolid />
-                </ListItemIcon>
-                <ListItemText
-                  className={`${open ? "" : "opacity-0"} transition-all`}
-                  primaryTypographyProps={{
-                    sx: {
-                      fontSize: "14px",
-                    },
-                  }}
-                  primary={t("Language")}
-                />
-                {open ? <IoIosArrowDown /> : <IoIosArrowUp />}
-              </ListItemButton>
-              <Collapse
-                in={translateOpen == true && open == true}
-                timeout="auto"
-                unmountOnExit
-              >
-                <List
-                  component="div"
-                  disablePadding
-                  className="first:mt-1"
-                  // sx={{
-                  //   border: "1px solid #E41205",
-                  // }}
-                >
-                  <div className="flex border-l-2 border-main-red ms-10">
-                    <div className="h-full border-r-1 border-main-red"></div>
-                    <ListItemButton
-                      sx={{
-                        fontSize: "12px",
-                        mr: 2.5,
-                        ml: open ? 1 : 0,
-                        paddingLeft: "0.5rem",
-                        borderRadius: "6px",
-                        backgroundColor:
-                          currentLang.lang === "id" ? "#E41205" : "",
-                        color: currentLang.lang === "id" ? "#FFF" : "",
-                        "&:hover": {
-                          backgroundColor:
-                            currentLang.lang === "id" ? "#E41205" : "",
-                          color: currentLang.lang === "id" ? "#FFF" : "",
-                        },
-                      }}
-                      className={`ms-3 w-fit`}
-                      onClick={() => {
-                        setCurrentLang({
-                          payload: {
-                            label: "Indonesia",
-                            lang: "id",
-                          },
-                        });
-                        i18n.changeLanguage("id");
-                      }}
-                    >
-                      <div className="border-r-1 border-main-red"></div>
-                      {t("Indonesia")}
-                    </ListItemButton>
-                  </div>
-                  <div className="flex border-l-2 border-main-red ms-10">
-                    <div className="h-full border-r-1 border-main-red"></div>
-                    <ListItemButton
-                      sx={{
-                        fontSize: "12px",
-                        mr: 2.5,
-                        ml: open ? 1 : 0,
-                        paddingLeft: "0.5rem",
-                        borderRadius: "6px",
-                        backgroundColor:
-                          currentLang.lang === "en" ? "#E41205" : "",
-                        color: currentLang.lang === "en" ? "#FFF" : "",
-                        "&:hover": {
-                          backgroundColor:
-                            currentLang.lang === "en" ? "#E41205" : "",
-                          color: currentLang.lang === "en" ? "#FFF" : "",
-                        },
-                      }}
-                      className={`ms-3 w-fit`}
-                      onClick={() => {
-                        setCurrentLang({
-                          payload: {
-                            label: "English",
-                            lang: "en",
-                          },
-                        });
-                        i18n.changeLanguage("en");
-                      }}
-                    >
-                      <div className="border-r-1 border-main-red"></div>
-                      {t("English")}
-                    </ListItemButton>
-                  </div>
-                </List>
-              </Collapse>
             </List>
           </div>
         </>
@@ -605,27 +464,8 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
             }}
             className="mb-5"
           >
-            <img
-              src={lrtLogo}
-              className={`h-16 mt-10 ${
-                open ? "opacity-100" : "opacity-0 w-0 h-0"
-              } transition-all duration-300 ease-in-out`}
-              // style={{
-              //   display: open ? "block" : "none",
-              // }}
-            />
-            <div className="w-full flex justify-start pl-14">
-              <span
-                className={`text-[9px] text-neutral-400FA ${
-                  open ? "opacity-100" : "opacity-0 w-0 h-0"
-                } transition-all duration-300 ease-in-out`}
-              >
-                {JSON.stringify(process.env.npm_package_version)?.replaceAll(
-                  '"',
-                  ""
-                )}
-              </span>
-            </div>
+            <div className="font-bold text-4xl py-3">AngPur</div>
+            <div className="w-full text-center">F&B</div>
           </DrawerHeader>
           <div>
             <List>
@@ -991,115 +831,6 @@ const Sidebar: FC<SidebarProp> = ({ open }) => {
                   </ListItemText>
                 ) : null}
               </ListItemButton>
-              <ListItemButton
-                dense
-                onClick={handleOpenTranslation}
-                sx={{
-                  marginTop: "1rem",
-                  paddingLeft: open ? 2 : 0,
-                  color: "#84848C",
-                }}
-              >
-                <ListItemIcon
-                  className={`flex justify-center`}
-                  sx={{
-                    color: "#84848C",
-                  }}
-                >
-                  <LiaLanguageSolid />
-                </ListItemIcon>
-                <ListItemText
-                  className={`${open ? "" : "opacity-0"} transition-all`}
-                  primaryTypographyProps={{
-                    sx: {
-                      fontSize: "14px",
-                    },
-                  }}
-                  primary={t("Language")}
-                />
-                {open ? <IoIosArrowDown /> : <IoIosArrowUp />}
-              </ListItemButton>
-              <Collapse
-                in={translateOpen == true && open == true}
-                timeout="auto"
-                unmountOnExit
-              >
-                <List
-                  component="div"
-                  disablePadding
-                  className="first:mt-1"
-                  // sx={{
-                  //   border: "1px solid #E41205",
-                  // }}
-                >
-                  <div className="flex border-l-2 border-main-red ms-10">
-                    <div className="h-full border-r-1 border-main-red"></div>
-                    <ListItemButton
-                      sx={{
-                        fontSize: "12px",
-                        mr: 2.5,
-                        ml: open ? 1 : 0,
-                        paddingLeft: "0.5rem",
-                        borderRadius: "6px",
-                        backgroundColor:
-                          currentLang.lang === "id" ? "#E41205" : "",
-                        color: currentLang.lang === "id" ? "#FFF" : "",
-                        "&:hover": {
-                          backgroundColor:
-                            currentLang.lang === "id" ? "#E41205" : "",
-                          color: currentLang.lang === "id" ? "#FFF" : "",
-                        },
-                      }}
-                      className={`ms-3 w-fit`}
-                      onClick={() => {
-                        setCurrentLang({
-                          payload: {
-                            label: "Indonesia",
-                            lang: "id",
-                          },
-                        });
-                        i18n.changeLanguage("id");
-                      }}
-                    >
-                      <div className="border-r-1 border-main-red"></div>
-                      {t("Indonesia")}
-                    </ListItemButton>
-                  </div>
-                  <div className="flex border-l-2 border-main-red ms-10">
-                    <div className="h-full border-r-1 border-main-red"></div>
-                    <ListItemButton
-                      sx={{
-                        fontSize: "12px",
-                        mr: 2.5,
-                        ml: open ? 1 : 0,
-                        paddingLeft: "0.5rem",
-                        borderRadius: "6px",
-                        backgroundColor:
-                          currentLang.lang === "en" ? "#E41205" : "",
-                        color: currentLang.lang === "en" ? "#FFF" : "",
-                        "&:hover": {
-                          backgroundColor:
-                            currentLang.lang === "en" ? "#E41205" : "",
-                          color: currentLang.lang === "en" ? "#FFF" : "",
-                        },
-                      }}
-                      className={`ms-3 w-fit`}
-                      onClick={() => {
-                        setCurrentLang({
-                          payload: {
-                            label: "English",
-                            lang: "en",
-                          },
-                        });
-                        i18n.changeLanguage("en");
-                      }}
-                    >
-                      <div className="border-r-1 border-main-red"></div>
-                      {t("English")}
-                    </ListItemButton>
-                  </div>
-                </List>
-              </Collapse>
             </List>
           </div>
         </>

@@ -29,18 +29,9 @@ const Header: FC<HeaderProp> = ({ open, handleDrawerOpen }) => {
   };
 
   useEffect(() => {
-    defaultRoleV2.routes
-      .filter((e) => {
-        return e.isHidden == false;
-      })
-      .map((e) => {
-        return {
-          ...e,
-          children: e.children.filter((e) => {
-            return e.isHidden == false;
-          }),
-        };
-      });
+    defaultRoleV2.routes.filter((e) => {
+      return e.isHidden == false;
+    });
   }, [window.location.pathname, open]);
 
   return (
@@ -103,29 +94,7 @@ const Header: FC<HeaderProp> = ({ open, handleDrawerOpen }) => {
               <span className="text-xs mb-1 font-bold">
                 {auth?.user?.fullName ?? ""}
               </span>
-              <span
-                className="text-xs text-gray-500"
-                onClick={() =>
-                  console.log("ini route sekarang", {
-                    isHidden: !permissionFullExtractor({
-                      env: import.meta.env
-                        .VITE_ALLOWED_PRE_DUTY_PERMIT_TO_ACCESS,
-                    }),
-                    currentMenu: defaultRoleV2.routes
-                      .filter((e) => {
-                        return e.isHidden == false;
-                      })
-                      .map((e) => {
-                        return {
-                          ...e,
-                          children: e.children.filter((e) => {
-                            return e.isHidden == false;
-                          }),
-                        };
-                      }),
-                  })
-                }
-              >
+              <span className="text-xs text-gray-500" onClick={() => ""}>
                 {(auth?.user?.activeRole?.group as string)
                   ?.toUpperCase()
                   ?.replaceAll("_", " ") ?? ""}
