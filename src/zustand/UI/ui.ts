@@ -17,7 +17,7 @@ export const useUiStore = create<UI>()(
     persist(
       (set) => ({
         sidebarHide: false,
-        creator: "Muhammad Radian Rasyid",
+        creator: "Aqsha Permana",
         loading: false,
         sidebarWidth: 0,
         setSidebarHide: () => {

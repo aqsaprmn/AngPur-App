@@ -13,6 +13,7 @@ import LoginClientPage from "./pages/Client/Login/LoginClientPage";
 import RegisterPage from "./pages/Client/Login/RegisterPage";
 import ShippingPage from "./pages/Client/Shipping/Shipping";
 import Cookies from "js-cookie";
+import OrderPage from "./pages/Client/Order/Order";
 
 function App() {
   useEffect(() => {
@@ -53,7 +54,7 @@ function App() {
             </Route>
 
             <Route path="/order">
-              <Route path="/order" element={<MainPage />} />
+              <Route path="/order" element={<OrderPage />} />
               <Route path="/order/detail/:uuid" element={<MainPage />} />
             </Route>
 

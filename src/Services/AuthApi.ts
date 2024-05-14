@@ -49,6 +49,7 @@ export const handleLogOut = async () => {
   try {
     await useLogoutQueryV2().catch((e) => console.log(e));
     await localStorage.removeItem("auth");
+    await localStorage.removeItem("cart");
     Object.keys(Cookies.get()).forEach((cookie) => {
       Cookies.remove(cookie);
     });

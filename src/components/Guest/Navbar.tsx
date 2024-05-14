@@ -26,6 +26,7 @@ import jwtDecode from "jwt-decode";
 import { useAuthStore } from "@app/zustand/Auth/auth";
 import { handleLogOut } from "@app/Services/AuthApi";
 import { FaShoppingCart } from "react-icons/fa";
+import { useCartStore } from "@app/zustand/Cart/Cart";
 
 interface Props {
   /**
@@ -50,6 +51,7 @@ const Navbar: React.FC<Props> = (props) => {
   const router = useLocation();
   const [auth, setAuth] = React.useState({});
   const { email, name } = useAuthStore((state: any) => state);
+  const { totalProduct } = useCartStore((state) => state);
   const [user, setUser] = React.useState<{ email: string; name: string }>({
     name: "",
     email: "",
@@ -102,12 +104,6 @@ const Navbar: React.FC<Props> = (props) => {
       </List>
     </Box>
   );
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -180,7 +176,7 @@ const Navbar: React.FC<Props> = (props) => {
                 >
                   <Link to={"/order"}>
                     <IconButton size="large" aria-label="" color="inherit">
-                      <Badge badgeContent={0} color="error">
+                      <Badge badgeContent={totalProduct} color="error">
                         <FaShoppingCart size={20} />
                       </Badge>
                     </IconButton>

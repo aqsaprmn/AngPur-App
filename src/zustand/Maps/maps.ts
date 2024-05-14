@@ -2,15 +2,6 @@ import { Data } from "@app/pages/Occ/Duty/ImplementationOfWork/ApprovalIOWOCC";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
-// interface LineState {
-//     Array<{
-//         select: boolean;
-//         selectAsChild: boolean;
-//         isHoverParent: boolean;
-//         isHoveredChild: boolean;
-//       }>
-// }
-
 export interface MapsChild {
   select: boolean;
   selectAsChild: boolean;
@@ -79,18 +70,19 @@ interface Maps {
   setSeletedArea: (data: string[]) => void;
   handleDeleteSelectedArea: (item: string) => void;
   handleSelectMulti: ({
-    payload }: {
-      payload: {
-        select: boolean;
-        selectAsChild: boolean;
-        isHoverParent: boolean;
-        isHoveredChild: boolean;
-      }[];
-    }) => void;
+    payload,
+  }: {
+    payload: {
+      select: boolean;
+      selectAsChild: boolean;
+      isHoverParent: boolean;
+      isHoveredChild: boolean;
+    }[];
+  }) => void;
 }
 
 const test = (state: Maps): string[] => {
-  console.log('test origin', state)
+  console.log("test origin", state);
   let result: any[] = [];
   const mapState: Data = {
     firstLineBottomState: state.firstLineBottomState,
@@ -120,13 +112,13 @@ const test = (state: Maps): string[] => {
         })
     ),
   ];
-  console.log({ result })
+  console.log({ result });
   return res;
 };
 
 const handleSelectArea = (payload: any[]) => {
-  return payload.map(item => item.name)
-}
+  return payload.map((item) => item.name);
+};
 
 const filterByName = (payload: any[], state: Maps) => {
   const mapState: Data = {
@@ -145,11 +137,14 @@ const filterByName = (payload: any[], state: Maps) => {
       matchingItem.selectAsChild = item.selectAsChild;
     }
   });
-  console.log(mapState)
-  return payload.map(item => item.name);
+  console.log(mapState);
+  return payload.map((item) => item.name);
 };
 
-const findMatchingItemByName = (mapState: Data, name: string): MapsChild | undefined => {
+const findMatchingItemByName = (
+  mapState: Data,
+  name: string
+): MapsChild | undefined => {
   const allStateItems: MapsChild[] = Object.values(mapState).flat();
   return allStateItems.find((stateItem) => stateItem.name === name);
 };
@@ -871,7 +866,7 @@ export const useMapStore = create<Maps>()(
           }));
         },
         handleSelectMulti: ({
-          payload
+          payload,
         }: {
           payload: {
             select: boolean;
