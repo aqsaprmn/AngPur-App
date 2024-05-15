@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useCartStore } from "@app/zustand/Cart/Cart";
 import CardCart from "@app/components/Card/CardCart";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, FormHelperText, TextField } from "@mui/material";
 import { GETListShipping } from "@app/Services/Shipping";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@app/zustand/Auth/auth";
@@ -19,6 +19,7 @@ import {
   POSTCreateOrder,
 } from "@app/Services/Order";
 import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,14 +68,16 @@ export default function BasicTabs() {
   const [orderConfirmationPayment, setOrderConfirmationPayment] =
     React.useState([]);
   const [orderProcess, setOrderProcess] = React.useState([]);
+  const [orderDelivery, setOrderDelivery] = React.useState([]);
   const [doneProcess, setDoneProcess] = React.useState([]);
   const [cancelProcess, setCancelProcess] = React.useState([]);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+    event;
     setValue(newValue);
   };
 
-  const { handleSubmit, values, setFieldValue } = useFormik({
+  const { handleSubmit, errors, values, setFieldValue } = useFormik({
     initialValues: {
       orders: [
         {
@@ -123,6 +126,16 @@ export default function BasicTabs() {
         icon: "error",
       });
     },
+    validationSchema: Yup.object().shape({
+      shipping: Yup.object().shape({
+        uuid: Yup.string().min(3).max(50).required("Shipping is required"),
+      }),
+      payment: Yup.object().shape({
+        method: Yup.string().min(3).max(30).required("Method is required"),
+        provider: Yup.string().min(3).max(30).required("Provider is required"),
+      }),
+    }),
+    validateOnChange: false,
   });
 
   const fetchShipping = async () => {
@@ -210,6 +223,40 @@ export default function BasicTabs() {
       });
 
       setOrderProcess(process);
+    } catch (error) {
+      console.error(error);
+
+      return Swal.fire({
+        title: "Oops",
+        text: "Something went wrong error",
+        icon: "error",
+      });
+    }
+  };
+
+  const fetchDeliveryOrder = async () => {
+    try {
+      const fetching = await GETListOrder({ user_uuid: uuid, status: "D" });
+
+      const process = fetching.data.data.map((item: any, index: number) => {
+        let totalOrder = 0;
+
+        item.detail.forEach((item: any) => {
+          totalOrder += item.total;
+        });
+
+        return {
+          id: index + 1,
+          parent_uuid: item.parent_uuid,
+          totalOrder,
+          totalPrice: item.payment.total,
+          detail: item.detail,
+          status: item.detail[0].status,
+          all: item,
+        };
+      });
+
+      setOrderDelivery(process);
     } catch (error) {
       console.error(error);
 
@@ -365,7 +412,7 @@ export default function BasicTabs() {
 
       if (fetching.isSuccess) {
         return Swal.fire({
-          title: "Cancel Order",
+          title: "Order Acceepted",
           text: fetching.data.message,
           icon: "success",
         }).then(() => {
@@ -394,7 +441,7 @@ export default function BasicTabs() {
 
     if (cartStore.cart.length > 0) {
       cartStore.cart.forEach((item) => {
-        newTotalPrice += parseInt(item.product.price);
+        newTotalPrice += parseInt(item.product.price) * item.product.total;
       });
 
       const orders = cartStore.cart.map((item) => {
@@ -419,6 +466,7 @@ export default function BasicTabs() {
     fetchShipping();
     fetchConfirmationPaymentOrder();
     fetchProcessOrder();
+    fetchDeliveryOrder();
     fetchDoneOrder();
     fetchCancelOrder();
   }, []);
@@ -436,8 +484,9 @@ export default function BasicTabs() {
             <Tab label="Cart" {...a11yProps(0)} />
             <Tab label="Payment" {...a11yProps(1)} />
             <Tab label="Process" {...a11yProps(2)} />
-            <Tab label="Completed" {...a11yProps(3)} />
-            <Tab label="Cancel" {...a11yProps(4)} />
+            <Tab label="Delivery" {...a11yProps(3)} />
+            <Tab label="Completed" {...a11yProps(4)} />
+            <Tab label="Cancel" {...a11yProps(5)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -451,7 +500,7 @@ export default function BasicTabs() {
                   {cartStore.cart.map((product: any, i: number) => {
                     return (
                       <div key={i} className="">
-                        <CardCart product={product} />
+                        <CardCart product={product} total={false} />
                       </div>
                     );
                   })}
@@ -520,6 +569,11 @@ export default function BasicTabs() {
                           option.id == label.id
                         }
                       />
+                      {errors.shipping?.uuid ? (
+                        <FormHelperText sx={{ color: "red" }}>
+                          {errors.shipping?.uuid}
+                        </FormHelperText>
+                      ) : null}{" "}
                     </div>
                   </div>
                 </div>
@@ -660,6 +714,20 @@ export default function BasicTabs() {
                               </div>
                             );
                           })}
+                        </div>{" "}
+                        <div className="flex justify-between pt-4">
+                          <div className="font-bold">
+                            Total Order: {detail.totalOrder}
+                          </div>
+                          <div className="font-bold">
+                            Total Price:{" "}
+                            <NumericFormat
+                              value={detail.totalPrice}
+                              displayType={"text"}
+                              thousandSeparator={true}
+                              prefix={"Rp. "}
+                            />
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <button
@@ -753,9 +821,92 @@ export default function BasicTabs() {
                               );
                             })}
                           </div>
-                          <div>
-                            {detail.status === "P" ? "Haven't " : "Is "}{" "}
-                            delivered
+                          <div className="flex justify-between pt-4 mb-2">
+                            <div className="font-bold">
+                              Total Order: {detail.totalOrder}
+                            </div>
+                            <div className="font-bold">
+                              Total Price:{" "}
+                              <NumericFormat
+                                value={detail.totalPrice}
+                                displayType={"text"}
+                                thousandSeparator={true}
+                                prefix={"Rp. "}
+                              />
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Haven't delivered
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 h-full justify-center items-center">
+                  <div>There is no order processed.</div>
+                  <div>
+                    <button
+                      onClick={() => {
+                        navigate("/");
+                      }}
+                      className="bg-blue-600 rounded px-3 py-2 text-white hover:bg-blue-700 duration-500"
+                    >
+                      Go to Menu
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={3}>
+          <div className="grid grid-cols-4 gap-2">
+            <div className="min-h-80 border col-span-2 rounded">
+              <div className="text-center font-bold border-b-2 pb-2 pt-3">
+                Order Delivery
+              </div>
+              {orderDelivery.length > 0 ? (
+                <div className="p-3">
+                  {orderDelivery.map((detail: any, i: number) => {
+                    return (
+                      <div
+                        key={i}
+                        className="border p-2 rounded flex flex-col gap-2"
+                      >
+                        <div className="text-sm text-gray-500">
+                          ORDER-ID:{" "}
+                          <span className="font-bold">
+                            {detail.parent_uuid}
+                          </span>
+                        </div>
+                        <div className="p-3 border rounded">
+                          <div className="max-h-48 overflow-y-auto">
+                            {detail.detail.map((detail: any, di: number) => {
+                              return (
+                                <div key={di}>
+                                  <CardCart product={detail} noteEdit={false} />
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="flex justify-between pt-4 mb-2">
+                            <div className="font-bold">
+                              Total Order: {detail.totalOrder}
+                            </div>
+                            <div className="font-bold">
+                              Total Price:{" "}
+                              <NumericFormat
+                                value={detail.totalPrice}
+                                displayType={"text"}
+                                thousandSeparator={true}
+                                prefix={"Rp. "}
+                              />
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            Is delivered
                           </div>
                         </div>
                         {detail.status === "D" && (
@@ -802,7 +953,7 @@ export default function BasicTabs() {
             </div>
           </div>
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={3}>
+        <CustomTabPanel value={value} index={4}>
           <div className="grid grid-cols-4 gap-2">
             <div className="min-h-80 border col-span-2 rounded">
               <div className="text-center font-bold border-b-2 pb-2 pt-3">
@@ -832,7 +983,21 @@ export default function BasicTabs() {
                               );
                             })}
                           </div>
-                          <div>{detail.status === "Y" && "Completed"} </div>
+                          <div className="flex justify-between pt-4 mb-2">
+                            <div className="font-bold">
+                              Total Order: {detail.totalOrder}
+                            </div>
+                            <div className="font-bold">
+                              Total Price:{" "}
+                              <NumericFormat
+                                value={detail.totalPrice}
+                                displayType={"text"}
+                                thousandSeparator={true}
+                                prefix={"Rp. "}
+                              />
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500">Completed</div>
                         </div>
                       </div>
                     );
@@ -856,7 +1021,7 @@ export default function BasicTabs() {
             </div>
           </div>
         </CustomTabPanel>
-        <CustomTabPanel value={value} index={4}>
+        <CustomTabPanel value={value} index={5}>
           <div className="grid grid-cols-4 gap-2">
             <div className="min-h-80 border col-span-2 rounded">
               <div className="text-center font-bold border-b-2 pb-2 pt-3">

@@ -71,18 +71,17 @@ const ShippingEditDialog = ({
 
       const shipping = fetching.data.data.shipping;
 
-      values.uuid = shipping.uuid;
-      values.address = shipping.address;
-      values.number = shipping.number;
-      values.rt = shipping.rt;
-      values.rw = shipping.rw;
-      values.address = shipping.address;
-      values.district = shipping.district;
-      values.village = shipping.village;
-      values.postalCode = shipping.postalCode;
-      values.city = shipping.city;
-      values.province = shipping.province;
-      values.active = shipping.active;
+      setFieldValue("uuid", shipping.uuid);
+      setFieldValue("address", shipping.address);
+      setFieldValue("number", shipping.number);
+      setFieldValue("rt", shipping.rt);
+      setFieldValue("rw", shipping.rw);
+      setFieldValue("district", shipping.district);
+      setFieldValue("village", shipping.village);
+      setFieldValue("postalCode", shipping.postalCode);
+      setFieldValue("city", shipping.city);
+      setFieldValue("province", shipping.province);
+      setFieldValue("active", shipping.active);
     } catch (error) {
       console.error(error);
 

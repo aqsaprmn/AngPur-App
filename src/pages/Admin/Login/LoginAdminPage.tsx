@@ -21,6 +21,16 @@ const LoginAdminPage = () => {
       },
     });
 
+    if (loginGo.isError) {
+      return Swal.fire({
+        title: "Oops!",
+        text: "You might just throw wrong password or email",
+        icon: "info",
+        showConfirmButton: true,
+        confirmButtonText: "Let me try again",
+      });
+    }
+
     const result = loginGo.data;
 
     await Cookies.set("token", result.data.access_token);
@@ -49,7 +59,7 @@ const LoginAdminPage = () => {
         }, 0);
       }
     } else {
-      Swal.fire({
+      return Swal.fire({
         title: "Oops!",
         text: "You might just throw wrong password or email",
         icon: "info",

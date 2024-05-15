@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const UserInstance = axios.create({
+const ProductInstance = axios.create({
   baseURL: `${import.meta.env.VITE_BASE_URL}`,
   timeout: 1000 * 60,
   validateStatus: (status) => {
@@ -9,7 +9,7 @@ const UserInstance = axios.create({
   },
 });
 
-UserInstance.interceptors.request.use(async (config) => {
+ProductInstance.interceptors.request.use(async (config) => {
   let tokensData = Cookies.get("token");
   if (tokensData !== undefined) {
     config.headers.Authorization = `Bearer ${tokensData}`;
@@ -18,7 +18,7 @@ UserInstance.interceptors.request.use(async (config) => {
   return config;
 });
 
-UserInstance.interceptors.response.use(
+ProductInstance.interceptors.response.use(
   (res) => res,
   async (error) => {
     Promise.reject(error);
@@ -26,4 +26,4 @@ UserInstance.interceptors.response.use(
   }
 );
 
-export default UserInstance;
+export default ProductInstance;

@@ -1,9 +1,9 @@
-import UserInstance from "./Instance";
+import ProductInstance from "./Instance";
 
-export const GETListUser = async () => {
+export const GETListProduct = async () => {
   try {
-    const fetching = await UserInstance.get(
-      `${import.meta.env.VITE_GET_USER_END_POINT}`
+    const fetching = await ProductInstance.get(
+      `${import.meta.env.VITE_GET_PRODUCT_END_POINT}`
     );
 
     const result = {
@@ -22,10 +22,10 @@ export const GETListUser = async () => {
   }
 };
 
-export const GETDetailUser = async ({ uuid }: { uuid: string }) => {
+export const GETDetailProduct = async ({ uuid }: { uuid: string }) => {
   try {
-    const fetching = await UserInstance.get(
-      `${import.meta.env.VITE_GET_DETAIL_USER_END_POINT}/${uuid}`
+    const fetching = await ProductInstance.get(
+      `${import.meta.env.VITE_GET_DETAIL_PRODUCT_END_POINT}/${uuid}`
     );
 
     const result = {
@@ -44,22 +44,26 @@ export const GETDetailUser = async ({ uuid }: { uuid: string }) => {
   }
 };
 
-export const POSTCreateUser = async ({
+export const POSTCreateProduct = async ({
   body,
 }: {
   body: {
     name: string;
-    role: string;
-    email: string;
-    phone: string;
-    password: string;
-    password_confirmation: string;
+    description: string;
+    stock: number;
+    price: number;
+    image: any;
   };
 }) => {
   try {
-    const fetching = await UserInstance.post(
-      `${import.meta.env.VITE_CREATE_USER_END_POINT}`,
-      body
+    const fetching = await ProductInstance.post(
+      `${import.meta.env.VITE_CREATE_PRODUCT_END_POINT}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
 
     const result = {
@@ -78,23 +82,32 @@ export const POSTCreateUser = async ({
   }
 };
 
-export const PATCHEditUser = async ({
+export const PATCHEditProduct = async ({
   body,
 }: {
   body: {
     uuid: string;
     name: string;
-    role: string;
-    email: string;
-    phone: string;
+    description: string;
+    stock: number;
+    price: number;
+    image?: any;
+    _method?: string;
   };
 }) => {
   try {
     const uuid = body.uuid;
 
-    const fetching = await UserInstance.patch(
-      `${import.meta.env.VITE_EDIT_USER_END_POINT}/${uuid}`,
-      body
+    body._method = "PATCH";
+
+    const fetching = await ProductInstance.post(
+      `${import.meta.env.VITE_EDIT_PRODUCT_END_POINT}/${uuid}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
 
     const result = {
@@ -113,10 +126,10 @@ export const PATCHEditUser = async ({
   }
 };
 
-export const DELETEUser = async ({ uuid }: { uuid: string }) => {
+export const DELETEProduct = async ({ uuid }: { uuid: string }) => {
   try {
-    const fetching = await UserInstance.delete(
-      `${import.meta.env.VITE_DELETE_USER_END_POINT}/${uuid}`
+    const fetching = await ProductInstance.delete(
+      `${import.meta.env.VITE_DELETE_PRODUCT_END_POINT}/${uuid}`
     );
 
     const result = {

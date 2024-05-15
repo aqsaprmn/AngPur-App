@@ -17,6 +17,10 @@ import OrderPage from "./pages/Client/Order/Order";
 import LoginAdminPage from "./pages/Admin/Login/LoginAdminPage";
 import LoginRoute from "./routes/LoginRoute";
 import UserPage from "./pages/Admin/User/User";
+import OrderAdminPage from "./pages/Admin/Order/Order";
+import OrderDetailAdminPage from "./pages/Client/Order/OrderDetail";
+import ProductAdminPage from "./pages/Admin/Product/Product";
+import FeatureRoute from "./routes/FeatureRoute";
 
 function App() {
   useEffect(() => {
@@ -47,9 +51,8 @@ function App() {
               <Route path="/shipping/edit" element={<ShippingPage />} />
             </Route>
 
-            <Route path="/order">
+            <Route path="/order" element={<FeatureRoute />}>
               <Route path="/order" element={<OrderPage />} />
-              <Route path="/order/detail/:uuid" element={<MainPage />} />
             </Route>
 
             <Route path="/login" element={<PublicRoute />}>
@@ -72,15 +75,21 @@ function App() {
               {/* Order */}
               <Route path="/admin/order" element={<PrivateRoute />}>
                 {/* GENERAL PAGE*/}
-                <Route path="/admin/order" element={<MainPage />} />
-                <Route path="/admin/order/create" element={<MainPage />} />
-                <Route path="/admin/order/edit" element={<MainPage />} />
+                <Route path="/admin/order" element={<OrderAdminPage />} />
+                <Route
+                  path="/admin/order/detail/:uuid"
+                  element={<OrderDetailAdminPage />}
+                />
               </Route>
 
               {/* Product */}
               <Route path="/admin/product" element={<PrivateRoute />}>
                 {/* GENERAL PAGE*/}
-                <Route path="/admin/product" element={<MainPage />} />
+                <Route path="/admin/product" element={<ProductAdminPage />} />
+                <Route
+                  path="/admin/product/detail"
+                  element={<ProductAdminPage />}
+                />
                 <Route path="/admin/product/create" element={<MainPage />} />
                 <Route path="/admin/product/edit" element={<MainPage />} />
               </Route>

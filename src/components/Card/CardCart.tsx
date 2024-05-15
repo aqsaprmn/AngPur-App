@@ -10,9 +10,11 @@ import { NumericFormat } from "react-number-format";
 export default function CardCart({
   product,
   noteEdit = true,
+  total = true,
 }: {
   product: any;
   noteEdit?: boolean;
+  total?: boolean;
 }) {
   const cartStore = useCartStore((state) => state);
 
@@ -47,7 +49,9 @@ export default function CardCart({
             }}
           >
             <div className="flex flex-col">
-              <div>Total: {product.product.total}x</div>
+              <div>
+                Total: {!total ? product.product.total : product.total}x
+              </div>
               <div>
                 <NumericFormat
                   value={product.product.price}
@@ -64,8 +68,6 @@ export default function CardCart({
                   size="small"
                   value={product.product.note}
                   onChange={(e) => {
-                    console.log(e.target.value);
-
                     const newStore = [...cartStore.cart].map((item) => {
                       if (item.product.uuid === product.product.uuid) {
                         item.product.note = e.target.value;

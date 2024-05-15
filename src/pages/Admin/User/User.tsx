@@ -1,11 +1,13 @@
 import { MainCustomButton } from "@app/components/Buttons";
 import CustomTableQuickFiltered from "@app/components/Tables/CustomTableQuickFiltered";
-import { DELETEShipping, GETListShipping } from "@app/Services/Shipping";
+import { DELETEUser, GETListUser } from "@app/Services/User/User";
 import { columnStandard } from "@app/utils/constants/Object";
-import { useAuthStore } from "@app/zustand/Auth/auth";
 import { GridColDef } from "@mui/x-data-grid-premium";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import UserCreateDialog from "./Dialog/UserDialogCreate";
+import UserEditDialog from "./Dialog/UserDialogEdit";
+import UserDetailDialog from "./Dialog/UserDialogDetail";
 
 const UserPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -19,7 +21,6 @@ const UserPage = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [rows, setRows] = useState<any[]>([]);
   const [uuidDetail, setUuidDetail] = useState<string>("");
-  const { uuid } = useAuthStore((state: any) => state);
 
   const columns: GridColDef[] = [
     {
@@ -35,35 +36,29 @@ const UserPage = () => {
     },
     {
       ...columnStandard,
-      field: "address",
-      headerName: "Address",
+      field: "name",
+      headerName: "Name",
       flex: 1,
     },
     {
       ...columnStandard,
-      field: "number",
-      headerName: "Number",
+      field: "email",
+      headerName: "Email",
       flex: 1,
     },
     {
       ...columnStandard,
-      field: "rtrw",
-      headerName: "RT/RW",
+      field: "role",
+      headerName: "ROLE",
       flex: 1,
     },
     {
       ...columnStandard,
-      field: "village",
-      headerName: "Village",
-      flex: 1,
-    },
-    {
-      ...columnStandard,
-      field: "status",
+      field: "active",
       headerName: "Status",
       flex: 1,
       renderCell: (params) => {
-        if (params.row.status === "Y") {
+        if (params.row.active === "A") {
           return <span className="text-green-500 ">Active</span>;
         }
 
@@ -123,23 +118,23 @@ const UserPage = () => {
     setLoadingTable(true);
 
     try {
-      const deleteShipping = await DELETEShipping({
+      const deleteUser = await DELETEUser({
         uuid,
       });
 
-      if (deleteShipping.isSuccess) {
+      if (deleteUser.isSuccess) {
         setTotalTick(totalTick + 1);
 
         return Swal.fire({
-          title: "Shipping",
+          title: "User",
           text: "Delete data successfull",
           icon: "success",
         });
       }
 
       return Swal.fire({
-        title: "Shipping",
-        text: deleteShipping.data.message,
+        title: "User",
+        text: deleteUser.data.message,
         icon: "success",
       });
     } catch (error) {
@@ -156,18 +151,17 @@ const UserPage = () => {
   const fetchData = async () => {
     setLoadingTable(true);
     try {
-      const fetching = await GETListShipping({ user_uuid: uuid });
+      const fetching = await GETListUser();
 
       const process = fetching.data.data.map((item: any, index: number) => {
         return {
-          id: item.shipping.uuid,
+          id: item.user.uuid,
           no: index + 1,
-          address: item.shipping.address,
-          number: item.shipping.number,
-          rtrw: `${item.shipping.rt}/${item.shipping.rw}`,
-          village: item.shipping.village,
-          status: item.shipping.active,
-          all: item.shipping,
+          name: item.user.name,
+          email: item.user.email,
+          role: item.user.role,
+          active: item.user.active,
+          all: item.user,
         };
       });
 
@@ -237,6 +231,25 @@ const UserPage = () => {
             setCurrentPage(p as number);
           },
         }}
+      />
+
+      <UserCreateDialog
+        setTotalTick={() => setTotalTick(totalTick + 1)}
+        open={isCreate}
+        onClose={() => setIsCreate(false)}
+      />
+
+      <UserEditDialog
+        uuid={uuidDetail}
+        setTotalTick={() => setTotalTick(totalTick + 1)}
+        open={isEdit}
+        onClose={() => setIsEdit(false)}
+      />
+
+      <UserDetailDialog
+        uuid={uuidDetail}
+        open={isDetail}
+        onClose={() => setIsDetail(false)}
       />
     </div>
   );
